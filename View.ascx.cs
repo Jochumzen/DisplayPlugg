@@ -22,6 +22,7 @@ using DotNetNuke.Services.Localization;
 using DotNetNuke.UI.Utilities;
 using Plugghest.Modules.PlugghestControls;
 using Plugghest.Base2;
+using System.Collections.Specialized;
 
 namespace Plugghest.Modules.DisplayPlugg
 {
@@ -53,6 +54,7 @@ namespace Plugghest.Modules.DisplayPlugg
         {
             try
             {
+
                 PluggId = Convert.ToInt32(((DotNetNuke.Framework.CDefault)this.Page).Title);
                 CultureCode = (Page as DotNetNuke.Framework.PageBase).PageCulture.Name;
                 BaseHandler bh = new BaseHandler();
@@ -192,6 +194,7 @@ namespace Plugghest.Modules.DisplayPlugg
             SubjectControl ucS = (SubjectControl)this.LoadControl("/DesktopModules/PlugghestControls/SubjectControl.ascx");
             if (ucS != null)
             {
+                ucS.SubjectCase = ESubjectCase.Plugg;
                 ucS.ControlOrder = controlOrder;
                 ucS.CultureCode = CultureCode;
                 ucS.SubjectId = pc.ThePlugg.SubjectId;
