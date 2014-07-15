@@ -54,7 +54,6 @@ namespace Plugghest.Modules.DisplayPlugg
         {
             try
             {
-
                 PluggId = Convert.ToInt32(((DotNetNuke.Framework.CDefault)this.Page).Title);
                 CultureCode = (Page as DotNetNuke.Framework.PageBase).PageCulture.Name;
                 BaseHandler bh = new BaseHandler();

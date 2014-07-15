@@ -1,4 +1,5 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="View.ascx.cs" Inherits="Plugghest.Modules.DisplayPlugg.View" %>
+
 <asp:Panel ID="pnlToCreationLanguage" runat="server" Visible ="false">
     <asp:HyperLink ID="hlToCreationLanguage" style="font-size: xx-small; float: right;" runat="server" resourcekey="ToCreationLanguage" /><br />
 </asp:Panel>
