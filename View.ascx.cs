@@ -49,6 +49,7 @@ namespace Plugghest.Modules.DisplayPlugg
         public int Edit;
         public int Translate;
         public int Remove;
+        public int DisplayInfo;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -63,6 +64,16 @@ namespace Plugghest.Modules.DisplayPlugg
                 Edit = !string.IsNullOrEmpty(Page.Request.QueryString["edit"]) ? Convert.ToInt16(Page.Request.QueryString["edit"]) : -1;
                 Translate = !string.IsNullOrEmpty(Page.Request.QueryString["translate"]) ? Convert.ToInt16(Page.Request.QueryString["translate"]) : -1;
                 Remove = !string.IsNullOrEmpty(Page.Request.QueryString["remove"]) ? Convert.ToInt16(Page.Request.QueryString["remove"]) : -1;
+                DisplayInfo = !string.IsNullOrEmpty(Page.Request.QueryString["info"]) ? Convert.ToInt16(Page.Request.QueryString["info"]) : -1;
+
+                #region hide/display controls
+                hlDisplayInfo.NavigateUrl = DotNetNuke.Common.Globals.NavigateURL(TabId, "", "info=0");
+                if(DisplayInfo == 0)
+                {
+                    pnlDisplayInfo.Visible = false;
+                    pnlHideDisplayInfo.Visible = true;
+                    hlHideDisplayInfo.NavigateUrl = DotNetNuke.Common.Globals.NavigateURL(TabId, "", "");
+                }
 
                 if (Remove > 0 && IsAuthorized)
                 {
@@ -70,7 +81,6 @@ namespace Plugghest.Modules.DisplayPlugg
                     Response.Redirect(DotNetNuke.Common.Globals.NavigateURL(TabId, "", "edit=0"));
                 }
 
-                #region hide/display controls
                 if (!InCreationLanguage && UserId > -1 && Translate == -1)
                 {
                     pnlToCreationLanguage.Visible = true;
@@ -102,6 +112,16 @@ namespace Plugghest.Modules.DisplayPlugg
                 phComponents.Controls.Clear();
                 int controlOrder = 1;
                 bool editOrTranslateMode = (Edit > -1 || Translate > -1) && UserId > -1;
+
+                if (DisplayInfo == 0)
+                {
+                    DisplayPluggInfo ucDPI = (DisplayPluggInfo)this.LoadControl("/DesktopModules/DisplayPlugg/DisplayPluggInfo.ascx");
+                    if (ucDPI != null)
+                    {
+                        ucDPI.LocalResourceFile = "/DesktopModules/DisplayPlugg/App_LocalResources/DisplayPluggInfo.ascx";
+                        phComponents.Controls.Add(ucDPI);
+                    }
+                }
 
                 if (editOrTranslateMode)
                 {

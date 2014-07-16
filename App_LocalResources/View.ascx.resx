@@ -135,6 +135,9 @@
   <data name="Description.Text" xml:space="preserve">
     <value>Plugg: Description</value>
   </data>
+  <data name="DisplayInfo.Text" xml:space="preserve">
+    <value>Display Plugg information</value>
+  </data>
   <data name="EditItem.Text" xml:space="preserve">
     <value>Edit</value>
   </data>
@@ -149,6 +152,9 @@
   </data>
   <data name="ExitTranslateMode.Text" xml:space="preserve">
     <value>Exit Translate mode</value>
+  </data>
+  <data name="HideDisplayInfo.Text" xml:space="preserve">
+    <value>Hide Plugg information</value>
   </data>
   <data name="Subject.Text" xml:space="preserve">
     <value>Subject:</value>

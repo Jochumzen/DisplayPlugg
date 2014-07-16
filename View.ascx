@@ -1,5 +1,14 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="View.ascx.cs" Inherits="Plugghest.Modules.DisplayPlugg.View" %>
 
+
+<asp:Panel ID="pnlDisplayInfo" runat="server">
+    <asp:HyperLink ID="hlDisplayInfo" style="font-size: xx-small; float: right;" runat="server" resourcekey="DisplayInfo" /><br />
+</asp:Panel>
+
+<asp:Panel ID="pnlHideDisplayInfo" runat="server" Visible ="false">
+    <asp:HyperLink ID="hlHideDisplayInfo" style="font-size: xx-small; float: right;" runat="server" resourcekey="HideDisplayInfo" /><br />
+</asp:Panel>
+
 <asp:Panel ID="pnlToCreationLanguage" runat="server" Visible ="false">
     <asp:HyperLink ID="hlToCreationLanguage" style="font-size: xx-small; float: right;" runat="server" resourcekey="ToCreationLanguage" /><br />
 </asp:Panel>
