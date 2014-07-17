@@ -162,6 +162,9 @@ namespace Plugghest.Modules.DisplayPlugg
                         case EComponentType.YouTube:
                             LoadYouTube(c, controlOrder);
                             break;
+                        case EComponentType.Label:
+                            LoadLabel(c, controlOrder);
+                            break;
                         case EComponentType.RichRichText:
                             LoadRichRich(c, controlOrder);
                             break;
@@ -273,6 +276,27 @@ namespace Plugghest.Modules.DisplayPlugg
                     ucYT.Case = EControlCase.Edit;
                 ucYT.LocalResourceFile = "/DesktopModules/PlugghestControls/App_LocalResources/YouTubeControl.ascx";
                 phComponents.Controls.Add(ucYT);
+            }
+        }
+
+        private void LoadLabel(PluggComponent c, int controlOrder)
+        {
+            LabelControl ucLC = (LabelControl)this.LoadControl("/DesktopModules/PlugghestControls/LabelControl.ascx");
+            if (ucLC != null)
+            {
+                ucLC.ModuleConfiguration = this.ModuleConfiguration;
+                ucLC.ItemId = c.PluggComponentId;
+                ucLC.CultureCode = CultureCode;
+                //ucRR.CreatedInCultureCode = pc.ThePlugg.CreatedInCultureCode;
+                ucLC.ControlOrder = controlOrder;
+                ucLC.ItemType = ETextItemType.PluggComponentLabel;
+                ucLC.Case = EControlCase.View;
+                if (InCreationLanguage & IsAuthorized & Edit > -1)
+                    ucLC.Case = EControlCase.ViewAllowEdit;
+                if (InCreationLanguage & IsAuthorized & Edit == controlOrder)
+                    ucLC.Case = EControlCase.Edit;
+                ucLC.LocalResourceFile = "/DesktopModules/PlugghestControls/App_LocalResources/LabelControl.ascx";
+                phComponents.Controls.Add(ucLC);
             }
         }
 
