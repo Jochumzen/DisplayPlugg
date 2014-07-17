@@ -2,6 +2,14 @@
   <files>
     <file>
       <path />
+      <name>AddNewComponentControl.ascx</name>
+    </file>
+    <file>
+      <path />
+      <name>DisplayPluggInfo.ascx</name>
+    </file>
+    <file>
+      <path />
       <name>License.txt</name>
     </file>
     <file>
@@ -14,19 +22,35 @@
     </file>
     <file>
       <path />
+      <name>Settings.ascx</name>
+    </file>
+    <file>
+      <path />
       <name>View.ascx</name>
     </file>
     <file>
       <path>App_LocalResources/</path>
-      <name>Edit.ascx.resx</name>
+      <name>AddNewComponentControl.ascx.es-es.resx</name>
     </file>
     <file>
       <path>App_LocalResources/</path>
-      <name>Settings.ascx.resx</name>
+      <name>AddNewComponentControl.ascx.resx</name>
+    </file>
+    <file>
+      <path>App_LocalResources/</path>
+      <name>DisplayPluggInfo.ascx.resx</name>
+    </file>
+    <file>
+      <path>App_LocalResources/</path>
+      <name>View.ascx.es-es.resx</name>
     </file>
     <file>
       <path>App_LocalResources/</path>
       <name>View.ascx.resx</name>
+    </file>
+    <file>
+      <path>Images/</path>
+      <name>DNNCentric.png</name>
     </file>
     <file>
       <path>Images/</path>

@@ -159,6 +159,9 @@
   <data name="Subject.Text" xml:space="preserve">
     <value>Subject:</value>
   </data>
+  <data name="TabPluggDeleted.Text" xml:space="preserve">
+    <value>152</value>
+  </data>
   <data name="Title.Text" xml:space="preserve">
     <value>Plugg: Title</value>
   </data>

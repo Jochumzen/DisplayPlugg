@@ -59,6 +59,8 @@ namespace Plugghest.Modules.DisplayPlugg
                 CultureCode = (Page as DotNetNuke.Framework.PageBase).PageCulture.Name;
                 BaseHandler bh = new BaseHandler();
                 pc = new PluggContainer(CultureCode, PluggId);
+                if (pc.ThePlugg.IsDeleted)
+                    Response.Redirect(DotNetNuke.Common.Globals.NavigateURL(Convert.ToInt32(Localization.GetString("TabPluggDeleted.Text", LocalResourceFile))));
                 InCreationLanguage = (pc.ThePlugg.CreatedInCultureCode == CultureCode);
                 IsAuthorized = ((this.UserId != -1 && pc.ThePlugg.WhoCanEdit == EWhoCanEdit.Anyone) || pc.ThePlugg.CreatedByUserId == this.UserId || (UserInfo.IsInRole("Administator")));
                 Edit = !string.IsNullOrEmpty(Page.Request.QueryString["edit"]) ? Convert.ToInt16(Page.Request.QueryString["edit"]) : -1;
