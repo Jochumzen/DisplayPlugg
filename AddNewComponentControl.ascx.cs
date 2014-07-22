@@ -14,6 +14,7 @@ namespace Plugghest.Modules.DisplayPlugg
     {
         public int ComponentOrder;
         public int PluggId;
+        public string AttachQS;
         protected void Page_Load(object sender, EventArgs e)
         {
             ddNewComponent.Items.Add(Localization.GetString("RichRichText", LocalResourceFile));
@@ -33,7 +34,7 @@ namespace Plugghest.Modules.DisplayPlugg
             cmp.PluggId = PluggId;
             BaseHandler bh = new BaseHandler();
             bh.AddComponent(pc, cmp);
-            Response.Redirect(DotNetNuke.Common.Globals.NavigateURL(TabId, "", "edit=0"));
+            Response.Redirect(DotNetNuke.Common.Globals.NavigateURL(TabId, "", "edit=0", AttachQS));
         }
     }
 }

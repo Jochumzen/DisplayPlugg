@@ -50,6 +50,8 @@ namespace Plugghest.Modules.DisplayPlugg
         public int Translate;
         public int Remove;
         public int DisplayInfo;
+        public int CoursePluggId;
+        string CPQuery;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -67,46 +69,50 @@ namespace Plugghest.Modules.DisplayPlugg
                 Translate = !string.IsNullOrEmpty(Page.Request.QueryString["translate"]) ? Convert.ToInt16(Page.Request.QueryString["translate"]) : -1;
                 Remove = !string.IsNullOrEmpty(Page.Request.QueryString["remove"]) ? Convert.ToInt16(Page.Request.QueryString["remove"]) : -1;
                 DisplayInfo = !string.IsNullOrEmpty(Page.Request.QueryString["info"]) ? Convert.ToInt16(Page.Request.QueryString["info"]) : -1;
+                CoursePluggId = !string.IsNullOrEmpty(Page.Request.QueryString["cp"]) ? Convert.ToInt16(Page.Request.QueryString["cp"]) : 0;
 
                 #region hide/display controls
-                hlDisplayInfo.NavigateUrl = DotNetNuke.Common.Globals.NavigateURL(TabId, "", "info=0");
+                CPQuery = CoursePluggId == 0 ? "" : "cp=" + CoursePluggId;
+                hlDisplayInfo.NavigateUrl = DotNetNuke.Common.Globals.NavigateURL(TabId, "", "info=0", CPQuery);
+
+
                 if(DisplayInfo == 0)
                 {
                     pnlDisplayInfo.Visible = false;
                     pnlHideDisplayInfo.Visible = true;
-                    hlHideDisplayInfo.NavigateUrl = DotNetNuke.Common.Globals.NavigateURL(TabId, "", "");
+                    hlHideDisplayInfo.NavigateUrl = DotNetNuke.Common.Globals.NavigateURL(TabId, "", "", CPQuery);
                 }
 
                 if (Remove > 0 && IsAuthorized)
                 {
                     bh.DeleteComponent(pc, Remove);
-                    Response.Redirect(DotNetNuke.Common.Globals.NavigateURL(TabId, "", "edit=0"));
+                    Response.Redirect(DotNetNuke.Common.Globals.NavigateURL(TabId, "", "edit=0", CPQuery));
                 }
 
                 if (!InCreationLanguage && UserId > -1 && Translate == -1)
                 {
                     pnlToCreationLanguage.Visible = true;
-                    hlToCreationLanguage.NavigateUrl = DotNetNuke.Common.Globals.NavigateURL(TabId, "", "language=" + pc.ThePlugg.CreatedInCultureCode);
+                    hlToCreationLanguage.NavigateUrl = DotNetNuke.Common.Globals.NavigateURL(TabId, "", "language=" + pc.ThePlugg.CreatedInCultureCode, CPQuery);
                     pnlTranslatePlugg.Visible = true;
-                    hlTranslatePlugg.NavigateUrl = DotNetNuke.Common.Globals.NavigateURL(TabId, "", "translate=0");
+                    hlTranslatePlugg.NavigateUrl = DotNetNuke.Common.Globals.NavigateURL(TabId, "", "translate=0", CPQuery);
                 }
 
                 if (InCreationLanguage && UserId > -1 && Edit == -1)
                 {
                     pnlEditPlugg.Visible = true;
-                    hlEditPlugg.NavigateUrl = DotNetNuke.Common.Globals.NavigateURL(TabId, "", "edit=0");
+                    hlEditPlugg.NavigateUrl = DotNetNuke.Common.Globals.NavigateURL(TabId, "", "edit=0", CPQuery);
                 }
 
                 if (!InCreationLanguage && UserId > -1 && Translate > -1)
                 {
                     pnlExitTranslateMode.Visible = true;
-                    hlExitTranslateMode.NavigateUrl = DotNetNuke.Common.Globals.NavigateURL(TabId, "", "");
+                    hlExitTranslateMode.NavigateUrl = DotNetNuke.Common.Globals.NavigateURL(TabId, "", CPQuery);
                 }
 
                 if (InCreationLanguage && UserId > -1 && Edit > -1)
                 {
                     pnlExitEditMode.Visible = true;
-                    hlExitEditMode.NavigateUrl = DotNetNuke.Common.Globals.NavigateURL(TabId, "", "");
+                    hlExitEditMode.NavigateUrl = DotNetNuke.Common.Globals.NavigateURL(TabId, "", CPQuery);
                 }
                 #endregion
 
@@ -148,7 +154,8 @@ namespace Plugghest.Modules.DisplayPlugg
 
                 #region AddComponents
                 int componentOrder = 1;
-                foreach (PluggComponent c in pc.TheComponents)
+                var theComponents = pc.GetComponentList();
+                foreach (PluggComponent c in theComponents)
                 {
                     if (Edit == 0 && IsAuthorized)
                         Add_AddNewComponentControl(componentOrder);
@@ -177,13 +184,33 @@ namespace Plugghest.Modules.DisplayPlugg
                         default:
                             break;
                     }
-                    HyperLink hl = new HyperLink();
                     if (Edit == 0 && IsAuthorized)
                     {
+                        HyperLink hl = new HyperLink();
                         hl.Text = "Remove Component";
-                        hl.NavigateUrl = DotNetNuke.Common.Globals.NavigateURL(TabId, "", "remove=" + componentOrder);
+                        hl.NavigateUrl = DotNetNuke.Common.Globals.NavigateURL(TabId, "", "remove=" + componentOrder, CPQuery);
+                        hl.Attributes.Add("onclick", "return confirm('Are you sure that you want to remove component? This action cannot be undone.');");
                         phComponents.Controls.Add(hl);
+                        phComponents.Controls.Add(new LiteralControl("<br />"));
+                        if(componentOrder > 1)
+                        {
+                            Button btnUp = new Button();
+                            btnUp.Text = "Move up";
+                            btnUp.Click += new EventHandler(btnUp_Click);
+                            btnUp.CommandName = c.PluggComponentId.ToString();
+                            phComponents.Controls.Add(btnUp);
+                        }
+                        if(componentOrder < theComponents.Count)
+                        {
+                            Button btnDown = new Button();
+                            btnDown.Text = "Move down";
+                            btnDown.Click += new EventHandler(btnDown_Click);
+                            btnDown.CommandName = c.PluggComponentId.ToString();
+                            phComponents.Controls.Add(btnDown);
+                        }
+
                     }
+
                     controlOrder++;
                     componentOrder++;
                 }
@@ -208,6 +235,7 @@ namespace Plugghest.Modules.DisplayPlugg
             {
                 ucNC.ComponentOrder = addAtPos;
                 ucNC.PluggId = PluggId;
+                ucNC.AttachQS = CPQuery;
                 ucNC.LocalResourceFile = "/DesktopModules/DisplayPlugg/App_LocalResources/AddNewComponentControl.ascx";
                 phComponents.Controls.Add(ucNC);
             }
@@ -223,6 +251,7 @@ namespace Plugghest.Modules.DisplayPlugg
                 ucS.CultureCode = CultureCode;
                 ucS.SubjectId = pc.ThePlugg.SubjectId;
                 ucS.ItemId = PluggId;
+                ucS.AttachQS = CPQuery;
                 ucS.Case = EControlCase.View;
                 if (InCreationLanguage & UserId > -1 & Edit > -1)
                     ucS.Case = EControlCase.ViewAllowEdit;
@@ -245,6 +274,7 @@ namespace Plugghest.Modules.DisplayPlugg
                 ucL.CreatedInCultureCode = pc.ThePlugg.CreatedInCultureCode;
                 ucL.ControlOrder = controlOrder;
                 ucL.ItemType = textItemType;
+                ucL.AttachQS = CPQuery;
                 ucL.Case = EControlCase.View;
                 if (InCreationLanguage && IsAuthorized && Edit > -1)
                     ucL.Case = EControlCase.ViewAllowEdit;
@@ -269,6 +299,7 @@ namespace Plugghest.Modules.DisplayPlugg
                 ucYT.PluggComponentId = c.PluggComponentId;
                 ucYT.CultureCode = CultureCode;
                 ucYT.ControlOrder = controlOrder;
+                ucYT.AttachQS = CPQuery;
                 ucYT.Case = EControlCase.View;
                 if (InCreationLanguage & IsAuthorized & Edit > -1)
                     ucYT.Case = EControlCase.ViewAllowEdit;
@@ -287,14 +318,19 @@ namespace Plugghest.Modules.DisplayPlugg
                 ucLC.ModuleConfiguration = this.ModuleConfiguration;
                 ucLC.ItemId = c.PluggComponentId;
                 ucLC.CultureCode = CultureCode;
-                //ucRR.CreatedInCultureCode = pc.ThePlugg.CreatedInCultureCode;
+                ucLC.CreatedInCultureCode = pc.ThePlugg.CreatedInCultureCode;
                 ucLC.ControlOrder = controlOrder;
                 ucLC.ItemType = ETextItemType.PluggComponentLabel;
+                ucLC.AttachQS = CPQuery;
                 ucLC.Case = EControlCase.View;
                 if (InCreationLanguage & IsAuthorized & Edit > -1)
                     ucLC.Case = EControlCase.ViewAllowEdit;
                 if (InCreationLanguage & IsAuthorized & Edit == controlOrder)
                     ucLC.Case = EControlCase.Edit;
+                if (!InCreationLanguage && UserId > -1 && Translate > -1)
+                    ucLC.Case = EControlCase.ViewAllowTranslate;
+                if (!InCreationLanguage && UserId > -1 && Translate == controlOrder)
+                    ucLC.Case = EControlCase.Translate;
                 ucLC.LocalResourceFile = "/DesktopModules/PlugghestControls/App_LocalResources/LabelControl.ascx";
                 phComponents.Controls.Add(ucLC);
             }
@@ -311,6 +347,7 @@ namespace Plugghest.Modules.DisplayPlugg
                 ucRR.CreatedInCultureCode = pc.ThePlugg.CreatedInCultureCode;
                 ucRR.ControlOrder = controlOrder;
                 ucRR.ItemType = ETextItemType.PluggComponentRichRichText;
+                ucRR.AttachQS = CPQuery;
                 ucRR.Case = EControlCase.View;
                 if (InCreationLanguage && IsAuthorized && Edit > -1)
                     ucRR.Case = EControlCase.ViewAllowEdit;
@@ -337,6 +374,7 @@ namespace Plugghest.Modules.DisplayPlugg
                 ucR.CreatedInCultureCode = pc.ThePlugg.CreatedInCultureCode;
                 ucR.ControlOrder = controlOrder;
                 ucR.ItemType = ETextItemType.PluggComponentRichText;
+                ucR.AttachQS = CPQuery;
                 ucR.Case = EControlCase.View;
                 if (InCreationLanguage && IsAuthorized && Edit > -1)
                     ucR.Case = EControlCase.ViewAllowEdit;
@@ -363,6 +401,7 @@ namespace Plugghest.Modules.DisplayPlugg
                 ucL.CreatedInCultureCode = pc.ThePlugg.CreatedInCultureCode;
                 ucL.ControlOrder = controlOrder;
                 ucL.ItemType = ELatexItemType.PluggComponentLatex;
+                ucL.AttachQS = CPQuery;
                 ucL.Case = EControlCase.View;
                 if (InCreationLanguage && IsAuthorized && Edit > -1)
                     ucL.Case = EControlCase.ViewAllowEdit;
@@ -376,6 +415,22 @@ namespace Plugghest.Modules.DisplayPlugg
                 ucL.LocalResourceFile = "/DesktopModules/PlugghestControls/App_LocalResources/LatexControl.ascx";
                 phComponents.Controls.Add(ucL);
             }
+        }
+
+        protected void btnUp_Click(object sender, EventArgs e)
+        {
+            int pcId = Convert.ToInt16(((System.Web.UI.WebControls.Button)sender).CommandName);
+            BaseHandler bh = new BaseHandler();
+            bh.MovePluggComponentUp(pcId);
+            Response.Redirect(DotNetNuke.Common.Globals.NavigateURL(TabId, "", "edit=0", CPQuery));
+        }
+
+        protected void btnDown_Click(object sender, EventArgs e)
+        {
+            int pcId = Convert.ToInt16(((System.Web.UI.WebControls.Button)sender).CommandName);
+            BaseHandler bh = new BaseHandler();
+            bh.MovePluggComponentDown(pcId);
+            Response.Redirect(DotNetNuke.Common.Globals.NavigateURL(TabId, "", "edit=0", CPQuery));
         }
 
         public ModuleActionCollection ModuleActions
